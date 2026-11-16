@@ -107,3 +107,18 @@ client-supplied bindings and writing the same ticket ID replaces its record.
 Before production use, add purchase authorization and server-side WebAuthn
 verification. KV is eventually consistent and does not provide atomic ticket
 redemption or uniqueness enforcement.
+
+## Check-in through a development tunnel
+
+If a tunnel or proxy rewrites the request URL to localhost, set the browser's
+public origin in the ignored `.dev.vars` file and restart Wrangler:
+
+```dotenv
+WEBAUTHN_ORIGIN=https://your-tunnel.trycloudflare.com
+```
+
+The backend uses this configured origin for both the HTTP Origin check and
+WebAuthn origin/RP ID verification. Update it whenever the tunnel hostname
+changes. Without this setting, the backend uses the incoming request URL.
+Vite proxies both `/bindTicket` and `/verify-ticket` (including its challenge
+endpoint) to the Worker.

@@ -32,6 +32,7 @@ async function download() {
     pubKeyCredParams: [{alg: -7, type: "public-key"}],
     authenticatorSelection: {
       authenticatorAttachment: "cross-platform",
+      residentKey: "required",
     },
     timeout: -1,
     attestation: "direct"
