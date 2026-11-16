@@ -69,12 +69,41 @@ bun run deploy
 ```
 
 Wrangler's build hook builds the frontend before development or deployment.
-Deployment requires Cloudflare authentication. No account, domain, or backend
-service bindings have been configured.
+Deployment requires Cloudflare authentication. The TICKETS KV binding is configured; no account or custom domain is configured.
 
-## Setup status
+## Ticket binding
 
-Dependency installation was blocked by a registry DNS error in the setup
-environment. The manifest uses `latest` until the installation commands above pin
-exact versions and generate `bun.lock`. Build, type, and browser checks must be run
-after installation.
+The download button generates a cryptographically random UUID, registers a
+WebAuthn credential, and posts `{ ticketId, credentialId, publicKey }` to
+`POST /bindTicket`. The public key is hex-encoded COSE data. The Worker validates
+the payload and awaits storage in `TICKETS` KV under `ticket:<ticketId>` before
+confirming success. Errors are displayed on the page.
+
+Use Node 26 (`nvm use`) and the existing npm lockfile:
+
+```sh
+npm ci
+npm run dev:worker
+```
+
+For frontend hot reload, run `npm run dev` in another terminal. Vite proxies
+`/bindTicket` to the Worker at port 8787. Local Wrangler development uses local
+KV storage. The `TICKETS` binding omits a namespace ID so Wrangler can provision
+a namespace on deployment; alternatively create one with
+`npx wrangler kv namespace create TICKETS` and add its returned `id` to the
+binding in `wrangler.jsonc`. Deployment requires Cloudflare authentication.
+See [Cloudflare's Wrangler configuration documentation](https://developers.cloudflare.com/workers/wrangler/configuration/).
+
+```sh
+npm run check
+node --test tests/worker.test.ts
+npm run build
+npm run deploy
+```
+
+This implements prototype storage, not ticket authorization or attestation
+verification. The existing fixed WebAuthn challenge remains. The endpoint accepts
+client-supplied bindings and writing the same ticket ID replaces its record.
+Before production use, add purchase authorization and server-side WebAuthn
+verification. KV is eventually consistent and does not provide atomic ticket
+redemption or uniqueness enforcement.

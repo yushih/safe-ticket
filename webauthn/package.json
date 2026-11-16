@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "dev:worker": "wrangler dev",
+    "db:dump": "wrangler kv key list --binding TICKETS --local | jq -r '.[].name' | while IFS= read -r key; do printf '\\n%s\\n' \"$key\"; wrangler kv key get \"$key\" --binding TICKETS --local --text; done",
     "cf-typegen": "wrangler types",
     "check": "wrangler types && tsc --noEmit && tsc -p tsconfig.client.json && tsc -p tsconfig.node.json",
     "build:client": "vite build",
@@ -12,7 +13,7 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "cbor2": "^2.4.2",
+    "cbor-x": "^1.6.9",
     "react": "latest",
     "react-dom": "latest"
   },

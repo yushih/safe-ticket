@@ -6,6 +6,7 @@
   "build": {
     "command": "npm run build:client"
   },
+  "kv_namespaces": [{ "binding": "TICKETS" }],
   "assets": {
     "directory": "./dist/client",
     "binding": "ASSETS",
