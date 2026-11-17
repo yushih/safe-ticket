@@ -39,7 +39,7 @@ Here is an example of using the mobile browser as the keyholder front end.
 
 ### Ticket Purchase
 
-During the ticket purchase flow, the keyholder front end generates a key pair, stores the private key in its local storage, and uploads the public key as part of the purchase flow. How the integration happens depends on where the purchase takes place:
+During the ticket purchase flow, the keyholder front end generates a key pair, stores the private key in its local storage (Credential Management API), and uploads the public key as part of the purchase flow. How the integration happens depends on where the purchase takes place:
 
 1. **In a mobile browser:** We are good to go.
 2. **In a desktop browser:** We need to direct the user to open a URL carrying a session ID in their mobile browser, using a QR code or a link sent by email or SMS. This additional step is a potential source of confusion and failure.
